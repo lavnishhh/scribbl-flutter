@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scribbl/lan/lan.dart';
 
 class HostPage extends StatefulWidget {
   const HostPage({super.key});
@@ -18,6 +19,13 @@ class _HostPageState extends State<HostPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(isScanning){
+      Server server = Server();
+      server.createServer();
+    }
+
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -77,14 +85,33 @@ class _HostPageState extends State<HostPage> {
                 )
               ],
             ),
-            Card(
-                elevation: 0,
-                color: Theme.of(context).colorScheme.surfaceVariant,
-                child: const SizedBox(
-                  width: 300,
-                  height: 100,
-                  child: Center(child: Text('Filled Card')),
-                )
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                    elevation: 0,
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32.0),
+                    ),
+                    child: SizedBox(
+                        child: ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
+                            itemCount: 5,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                  // titleAlignment: "titleAlignment",
+                                leading: const Icon(Icons.done),
+                                  title: const Text('Headline Text'),
+                                  trailing: IconButton(
+                                      icon: const Icon(
+                                          Icons.person_remove_alt_1_outlined),
+                                    onPressed: (){
+
+                                    },
+                                  ));
+                            }))),
+              ),
             ),
           ],
         ),

@@ -4,7 +4,7 @@ class Server{
 
   static late Registration registration;
 
-  static Future<void> startServer() async {
+  static Future<void> startDiscovering() async {
     final discovery = await startDiscovery('_http._tcp');
     discovery.addServiceListener((service, status) {
       if (status == ServiceStatus.found) {
@@ -15,13 +15,13 @@ class Server{
     });
   }
 
-  static Future<void> scanForDevices() async {
+  static Future<void> startServer(String username) async {
 
     registration = await register(
-        const Service(name: 'Foo', type: '_http._tcp', port: 56000));
+        Service(name: "$username's server", type: '_http._tcp', port: 69420));
   }
 
-  void stopScanningForDevices() async {
+  void stopServer() async {
 
     await unregister(registration);
   }

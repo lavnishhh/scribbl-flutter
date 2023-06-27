@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scribbl/host.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'lan.dart';
 
 void main() {
   runApp(const MyApp());
@@ -144,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   FilledButton.tonal(
                     onPressed: () {
-                      Server.scanForDevices();
+                      // Server.scanForDevices();
                     },
                     child: const SizedBox(
                       width: 70,
