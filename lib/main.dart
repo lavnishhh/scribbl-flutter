@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scribbl/host.dart';
+import 'package:scribbl/join_room.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -144,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   FilledButton.tonal(
                     onPressed: () {
                       // Server.scanForDevices();
+                      MaterialPageRoute(builder: (context) => const JoinRoomPage());
                     },
                     child: const SizedBox(
                       width: 70,
