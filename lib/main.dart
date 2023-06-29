@@ -104,8 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+          elevation: 1,
         ),
         // drawer: const SideBar(),
         body: Center(
@@ -128,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   FilledButton.tonal(
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => const HostPage()));
+                          MaterialPageRoute(builder: (context) => HostPage(username: username,)));
                     },
                     child: const SizedBox(
                       width: 70,
@@ -145,7 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   FilledButton.tonal(
                     onPressed: () {
                       // Server.scanForDevices();
-                      MaterialPageRoute(builder: (context) => const JoinRoomPage());
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => JoinRoomPage(username: username,)));
                     },
                     child: const SizedBox(
                       width: 70,

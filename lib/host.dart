@@ -1,28 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:scribbl/lan/lan.dart';
+import 'package:scribbl/lan/host.dart';
+import 'dart:math';
+
+import 'game/player.dart';
 
 class HostPage extends StatefulWidget {
-  const HostPage({super.key});
 
+  const HostPage({
+    super.key,
+    required this.username
+  });
+
+  final String username;
   @override
   State<HostPage> createState() => _HostPageState();
+
+
 }
 
 class _HostPageState extends State<HostPage> {
-  bool isScanning = true;
 
+  //set discovery mode
+  bool isScanning = true;
   void setScanningState(bool state) {
     setState(() {
       isScanning = state;
     });
   }
 
+  HostServer hostServer = HostServer();
+
+  //update players function, called from hostServer class
+
+  void updatePlayerList(){
+    setState(() {
+
+    });
+  }
+
+
+  @override
+  void initState(){
+    super.initState();
+
+    //create server
+    int port = Random().nextInt(9999 - 1024) + 1024;
+    hostServer.createServer(widget.username, port).then((value) => hostServer.startAdvertising());
+
+  }
+
+  @override
+  void dispose(){
+
+    //delete, clean up server
+    hostServer.stopServer();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
 
+    HostServer.updateListFunction = updatePlayerList;
+
     if(isScanning){
-      Server server = Server();
-      server.createServer();
+
     }
 
 
@@ -97,19 +138,115 @@ class _HostPageState extends State<HostPage> {
                     child: SizedBox(
                         child: ListView.builder(
                             padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
-                            itemCount: 5,
+                            itemCount: HostServer.clients.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return ListTile(
-                                  // titleAlignment: "titleAlignment",
-                                leading: const Icon(Icons.done),
-                                  title: const Text('Headline Text'),
-                                  trailing: IconButton(
-                                      icon: const Icon(
-                                          Icons.person_remove_alt_1_outlined),
-                                    onPressed: (){
+                              return Column(
+                                children: [
+                                  ListTile(
+                                      // titleAlignment: "titleAlignment",
+                                    leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                          icon: const Icon(
+                                              Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
 
-                                    },
-                                  ));
+                                        },
+                                      )
+                                  ),
+                                  ListTile(
+                                    // titleAlignment: "titleAlignment",
+                                      leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                            Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
+
+                                        },
+                                      )
+                                  ),
+                                  ListTile(
+                                    // titleAlignment: "titleAlignment",
+                                      leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                            Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
+
+                                        },
+                                      )
+                                  ),
+                                  ListTile(
+                                    // titleAlignment: "titleAlignment",
+                                      leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                            Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
+
+                                        },
+                                      )
+                                  ),ListTile(
+                                    // titleAlignment: "titleAlignment",
+                                      leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                            Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
+
+                                        },
+                                      )
+                                  ),ListTile(
+                                    // titleAlignment: "titleAlignment",
+                                      leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                            Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
+
+                                        },
+                                      )
+                                  ),ListTile(
+                                    // titleAlignment: "titleAlignment",
+                                      leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                            Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
+
+                                        },
+                                      )
+                                  ),ListTile(
+                                    // titleAlignment: "titleAlignment",
+                                      leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                            Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
+
+                                        },
+                                      )
+                                  ),ListTile(
+                                    // titleAlignment: "titleAlignment",
+                                      leading: const Icon(Icons.done),
+                                      title: Text(HostServer.clients[index].username),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                            Icons.person_remove_alt_1_outlined),
+                                        onPressed: (){
+
+                                        },
+                                      )
+                                  ),
+                                ],
+                              );
                             }))),
               ),
             ),
