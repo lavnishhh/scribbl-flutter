@@ -1,59 +1,66 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:nsd/nsd.dart';
 import 'package:scribbl/game/player.dart';
 import 'package:scribbl/lan/communication.dart';
 
 
-class HostServer {
+abstract class HostServer {
 
-  Registration? registration;
-  ServerSocket? serverSocket;
+  static Registration? registration;
+  static ServerSocket? serverSocket;
+  static String? username;
   static List<Player> clients = [];
   static void Function()? updateListFunction;
+  static bool lock = false;
+  static late BuildContext context;
 
-  Future<void> createServer(String username, int port) async {
+  //set in host.dart
+  static late Player hostPlayer;
+
+  static Future<void> createServer(String username, int port) async {
+
+    HostServer.username = username;
+
     InternetAddress host = InternetAddress.anyIPv4;
-    registration = await register(Service(
+    HostServer.registration = await register(Service(
         name: username, type: '_http._tcp', host: host.address, port: port));
 
-    print(registration!.service.host);
-    print(registration!.service.port);
-
-    serverSocket = await ServerSocket.bind(registration?.service.host, port);
-    print(serverSocket?.address);
-    print(serverSocket?.port);
+    HostServer.serverSocket = await ServerSocket.bind(HostServer.registration?.service.host, port);
+    print(HostServer.serverSocket?.address);
+    print(HostServer.serverSocket?.port);
   }
 
-  void stopServer() async {
+  static void stopServer() async {
     print("stopping server");
-    if (registration == null) {
+    if (HostServer.registration == null) {
       return;
     }
-    unregister(registration!);
-    serverSocket?.close();
-    print(clients);
-    for(Player client in clients){
-      client.socket.destroy();
-    }
-    clients.clear();
+    unregister(HostServer.registration!);
+    HostServer.serverSocket?.close();
+    print(HostServer.clients);
+    HostServer.clients.map((client)=>{
+      print(client.username),
+      client.socket?.close()
+    });
+    HostServer.clients.clear();
   }
 
-  void startAdvertising() async {
-    serverSocket?.listen((Socket event) {
+  static void startAdvertising() async {
+    HostServer.serverSocket?.listen((Socket event) {
       handleConnection(event);
     });
   }
 
-  void handleConnection(Socket client) {
+  static void handleConnection(Socket client) {
     print(
       "Connection from ${client.remoteAddress.address}:${client.remotePort}",
     );
 
     client.listen(
-      (Uint8List data) async {
+          (Uint8List data) async {
         final message = String.fromCharCodes(data);
 
         SocketCommand command = parseCommand(message);
@@ -61,44 +68,101 @@ class HostServer {
         print(command);
 
         if (command.key == SocketAction.join) {
-          for (var client in clients) {
-            client.socket.write(SocketCommand(SocketAction.successMessage,
-                "${command.value} joined the game"));
+
+          // reject if room is locked
+          if(lock){
+            broadcast("Room is locked.", [Player.createWithSocket(socket: client, username: command.value.toString())], SocketAction.roomLocked);
+            remove(client);
+            return;
           }
 
-          clients
-              .add(Player(socket: client, username: command.value.toString()));
+          //return information about players
+          Map<String, dynamic> playersJson =  {};
 
-          updateListFunction!();
-          print(clients);
+          for(var client in HostServer.clients){
+            playersJson[client.id] = {
+              "username":client.username,
+              "id":client.id,
+              "color":client.color
+            };
+          }
 
-          client.write(
-            SocketCommand(SocketAction.successMessage,
-                "You are logged in as: ${command.value}"),
+          //add host to output
+          playersJson[HostServer.hostPlayer.id] = {
+            "username":HostServer.hostPlayer.username,
+            "id":HostServer.hostPlayer.id,
+            "color":HostServer.hostPlayer.color
+          };
+
+
+          String playersParsed = mapToString(playersJson);
+
+          Map<String, Player> players = {};
+
+          //update room
+          for(var id in playersJson.keys){
+            Map<String, dynamic>? playerRaw = playersJson[id];
+            Player player = Player.set(username: playerRaw?["username"], id: playerRaw?["id"], color: playerRaw?["color"]);
+            if(id == "9"){
+              Room.host = player;
+            }
+            players[id] = player;
+          }
+
+          print(players);
+
+          Room.players = players;
+
+          // add player to clients
+          HostServer.clients
+              .add(Player.createWithSocket(socket: client, username: command.value.toString()));
+
+          //send updated player list
+          broadcast(playersParsed, HostServer.clients, SocketAction.join);
+
+          HostServer.updateListFunction!();
+
+        }
+
+        if(command.key == SocketAction.error){
+
+        }
+
+        if(command.key == SocketAction.ping){
+          ScaffoldMessenger.of(HostServer.context).showSnackBar(
+            SnackBar(
+              content: Text(command.value.toString()),
+            ),
           );
         }
-        print(command.value);
       }, // handle errors
       onError: (error) {
         print(error);
-        client.close();
-        clients.removeWhere(((element) => element.socket == client));
-        updateListFunction!();
-
+        remove(client);
       },
 
       // handle the client closing the connection
       onDone: () {
         print('Client left');
-        client.close();
-        clients.removeWhere(((element) => element.socket == client));
-        updateListFunction!();
-
+        remove(client);
       },
     );
   }
 
-  List<Player> getPlayers(){
-    return clients;
+  static void broadcast(String message, List<Player> clients, SocketAction command,) {
+    for (var client in clients) {
+      client.socket?.write(SocketCommand(command,
+          message));
+    }
+  }
+
+  static void remove(Socket client){
+    client.close();
+    HostServer.clients.removeWhere(((element) => element.socket == client));
+    HostServer.updateListFunction!();
+  }
+
+  static void clientsToPlayers(){
+
   }
 }

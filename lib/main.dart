@@ -103,9 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
     return Scaffold(
-        appBar: AppBar(
-          elevation: 1,
-        ),
+
         // drawer: const SideBar(),
         body: Center(
           child: Column(
@@ -124,35 +122,43 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FilledButton.tonal(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => HostPage(username: username,)));
-                    },
-                    child: const SizedBox(
-                      width: 70,
-                      child: Text(
-                        'Host',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(),
+                  Hero(
+                    tag: 'host_hero',
+                    child: FilledButton.tonal(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => HostPage(username: username,)));
+                      },
+                      child: const SizedBox(
+                        width: 70,
+                        child: ExcludeSemantics(
+                          child: Text(
+                            'Host',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(
                     width: 10,
                   ),
-                  FilledButton.tonal(
-                    onPressed: () {
-                      // Server.scanForDevices();
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => JoinRoomPage(username: username,)));
-                    },
-                    child: const SizedBox(
-                      width: 70,
-                      child: Text(
-                        'Join',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(),
+                  Hero(
+                    tag: 'client_hero',
+                    child: FilledButton.tonal(
+                      onPressed: () {
+                        // Server.scanForDevices();
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => JoinRoomPage(username: username,)));
+                      },
+                      child: const SizedBox(
+                        width: 70,
+                        child: Text(
+                          'Join',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(),
+                        ),
                       ),
                     ),
                   ),
@@ -167,6 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     context: context,
                     isScrollControlled: true,
                     builder: (BuildContext context) {
+
                       return SingleChildScrollView(
                         child: Container(
                           padding: EdgeInsets.only(

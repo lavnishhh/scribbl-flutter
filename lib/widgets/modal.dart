@@ -13,17 +13,17 @@ class BottomModalButton extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: _textEditingController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Enter some text',
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   FilledButton.tonal(
                     onPressed: () {
                       String enteredText = _textEditingController.text;

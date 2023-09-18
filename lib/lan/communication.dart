@@ -1,13 +1,26 @@
+import 'dart:convert';
 import 'dart:io';
 
-enum SocketAction { join, successMessage, unknown }
+enum SocketAction { join, kick, roomLocked, start, message, players, ping, unknown, error }
 
 SocketAction parseStringToSocketAction(String value) {
   switch (value) {
     case "SocketAction.join":
       return SocketAction.join;
-    case "SocketAction.successMessage":
-      return SocketAction.successMessage;
+    case "SocketAction.kick":
+      return SocketAction.kick;
+    case "SocketAction.start":
+      return SocketAction.start;
+    case "SocketAction.roomLocked":
+      return SocketAction.roomLocked;
+    case "SocketAction.message":
+      return SocketAction.message;
+    case "SocketAction.players":
+      return SocketAction.players;
+    case "SocketAction.ping":
+      return SocketAction.ping;
+    case "SocketAction.error":
+      return SocketAction.error;
     default:
       return SocketAction.unknown;
   }
@@ -27,6 +40,16 @@ SocketCommand parseCommand(String message) {
 
   return SocketCommand(
     parseStringToSocketAction(splittedMessage.removeAt(0)),
-    splittedMessage.join(),
+    splittedMessage.join(":"),
   );
+}
+
+// Method to parse a Map to a string
+String mapToString(Map<String, dynamic> map) {
+  return json.encode(map);
+}
+
+// Method to parse a string to a Map
+Map<String, dynamic> stringToMap(String jsonString) {
+  return json.decode(jsonString);
 }
